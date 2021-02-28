@@ -7,6 +7,7 @@ using Dapper;
 using Microsoft.Extensions.Configuration;
 using QuanLyGiaoHang.Models;
 using System.Data.SqlClient;
+using QuanLyGiaoHang.Dtos;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -48,7 +49,31 @@ namespace QuanLyGiaoHang.Controllers
                 return result.Single();
             }
         }
-
+        [HttpGet("Paging")]
+        public async Task<PagedResult<NhanVien>> Get(string keyword, int pageIndex, int pageSize)
+        {
+            using (var conn = new SqlConnection(_connectionstring))
+            {
+                if (conn.State == System.Data.ConnectionState.Closed)
+                    conn.Open();
+                var paramaters = new DynamicParameters();
+                paramaters.Add("@keyword", keyword);
+                paramaters.Add("@pageIndex", pageIndex);
+                paramaters.Add("@pageSize", pageSize);
+                paramaters.Add("@totalRow",dbType: System.Data.DbType.Int32, direction: System.Data.ParameterDirection.Output);
+                var result = await conn.QueryAsync<NhanVien>("USP_Get_NhanVien_AllPaging", paramaters, null, null, System.Data.CommandType.StoredProcedure);
+                var totalRow = paramaters.Get<int>("@totalRow");
+                var pageResult =  new PagedResult<NhanVien>
+                {
+                    Items = result.ToList(),
+                    PageIndex = pageIndex,
+                    PageSize = pageSize,
+                    TotalRow = totalRow
+                };
+                return pageResult;
+            }
+            
+        }
         // POST api/<NhanVienController>
         [HttpPost]
         public async Task Post([FromBody] NhanVien nv)
