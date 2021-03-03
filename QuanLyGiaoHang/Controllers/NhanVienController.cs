@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using QuanLyGiaoHang.Models;
 using System.Data.SqlClient;
 using QuanLyGiaoHang.Dtos;
+using QuanLyGiaoHang.Filter;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -32,6 +33,7 @@ namespace QuanLyGiaoHang.Controllers
                     conn.Open();
                 var result = await conn.QueryAsync<NhanVien>("USP_GetAll_NhanVien", null, null, null, System.Data.CommandType.StoredProcedure);
                 return result;
+                
             }
         }
 
@@ -76,6 +78,7 @@ namespace QuanLyGiaoHang.Controllers
         }
         // POST api/<NhanVienController>
         [HttpPost]
+        [ModelValidation]
         public async Task Post([FromBody] NhanVien nv)
         {
             using(var conn = new SqlConnection(_connectionstring))
@@ -98,6 +101,7 @@ namespace QuanLyGiaoHang.Controllers
 
         // PUT api/<NhanVienController>/5
         [HttpPut("{MNV}")]
+        [ModelValidation]
         public async Task Put(string MNV, [FromBody] NhanVien nv)
         { 
             using(var conn = new SqlConnection(_connectionstring))

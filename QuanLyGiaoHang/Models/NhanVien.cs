@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -7,6 +8,7 @@ namespace QuanLyGiaoHang.Models
 {
     public class NhanVien
     {
+        [Required]
         public string MANHANVIEN { get; set; }
         public string HO { get; set; }
         public string TEN { get; set; }
